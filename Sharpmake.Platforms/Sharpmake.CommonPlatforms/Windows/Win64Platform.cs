@@ -147,13 +147,19 @@ namespace Sharpmake
                             break;
                         default:
                             compilerDevEnv = platformToolset.GetDefaultDevEnvForToolset();
+                            string compilerBinPath = null;
+                            if (fastBuildSettings.BinPath.TryGetValue(devEnv, out compilerBinPath))
+                                pathToCompiler = compilerBinPath;
                             break;
                     }
 
                     if (compilerDevEnv.HasValue)
                     {
                         platformToolSetPath = Path.Combine(compilerDevEnv.Value.GetVisualStudioDir(), "VC");
-                        pathToCompiler = compilerDevEnv.Value.GetVisualStudioBinPath(Platform.win64);
+
+                        if (pathToCompiler == null)
+                            pathToCompiler = compilerDevEnv.Value.GetVisualStudioBinPath(Platform.win64);
+
                         compilerExeName = "cl.exe";
 
                         var compilerFamilyKey = new FastBuildWindowsCompilerFamilyKey(devEnv, platformToolset);
